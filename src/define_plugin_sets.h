@@ -532,6 +532,9 @@ To create/register a plugin, you have to :
     #define USES_P059   // Encoder
 
     #define USES_P063   // TTP229_KeyPad
+
+    #define USES_P201   // ILI9341 based touch buttons
+    #define USES_P202   // AM2315
 #endif
 
 
