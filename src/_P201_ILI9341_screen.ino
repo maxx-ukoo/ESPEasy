@@ -163,8 +163,17 @@ boolean Plugin_201(byte function, struct EventStruct *event, String& string)
         break;
       }
 
+    case PLUGIN_GET_DEVICEGPIONAMES:
+      {
+        event->String1 = formatGpioName_input(F("CS"));
+        event->String2 = formatGpioName_input(F("D/C"));
+        event->String3 = formatGpioName_input(F("SDI(MOSI) T_DIN"));
+        break;
+      }
+
     case PLUGIN_WEBFORM_LOAD:
       {
+        addFormNote(F("1st=GPIO15, 2nd=GPIO02, 3rd=GPIO13"));
         addFormCheckBox(F("Send Boot state"),F("plugin_201_boot"),
         		Settings.TaskDevicePluginConfig[event->TaskIndex][0]);
         char timeTemplate[3][40];
@@ -212,7 +221,9 @@ boolean Plugin_201(byte function, struct EventStruct *event, String& string)
       }
     case PLUGIN_INIT:
       {
+        Serial.println ("TFT start!");
         if (!Plugin_201_TFT) {
+              Serial.println ("TFT inin starting");
               Plugin_201_TFT = new TFT_eSPI;
               Plugin_201_TFT->init();
               Plugin_201_TFT->setRotation(3);
@@ -224,9 +235,11 @@ boolean Plugin_201(byte function, struct EventStruct *event, String& string)
               Plugin_201_button_3 = new TFT_eSPI_Button;
               Plugin_201_button_3->initButtonUL(Plugin_201_TFT, 30, 30, 72, 100, TFT_BLACK, TFT_DARKGREY, TFT_WHITE,"Auto", 1);
         }
+        Serial.println ("TFT OK");
         Plugin_201_draw_temperature(F("--"));
         Plugin_201_TFT->fillScreen(BACKGROUND);
         Plugin_201_draw_screen();
+        Serial.println ("TFT INIT OK");
         success = true;
         break;
       }
@@ -242,12 +255,11 @@ boolean Plugin_201(byte function, struct EventStruct *event, String& string)
       }
     case PLUGIN_TEN_PER_SECOND:
       {
-          if (Plugin_201_TFT && touchDelay == 0 ) {
+        if (Plugin_201_TFT && touchDelay == 0 ) {
             uint16_t x, y;
             if (Plugin_201_TFT->getTouch(&x, &y))
             {
                 touchDelay = 1;
-                const boolean state = false;
                 if (Plugin_201_button_1->contains(x, y)) {
                   switchstate[PLUGIN_VALUE_1]++;
                   if (switchstate[PLUGIN_VALUE_1] > 2) {
@@ -276,9 +288,9 @@ boolean Plugin_201(byte function, struct EventStruct *event, String& string)
                   sendData(event);
                 }
             }
-          success = true;
-          break;
         }
+        success = true;
+        break;
       }
     case PLUGIN_ONCE_A_SECOND:
       {
@@ -293,6 +305,7 @@ boolean Plugin_201(byte function, struct EventStruct *event, String& string)
       }
     case PLUGIN_READ:
       {
+        Serial.println ("TFT PLUGIN_READ");
         char deviceTemplate[3][40];
         LoadCustomTaskSettings(event->TaskIndex, (byte*)&deviceTemplate, sizeof(deviceTemplate));
 
@@ -316,7 +329,6 @@ boolean Plugin_201(byte function, struct EventStruct *event, String& string)
             String newString = parseTemplate(tmpString, 2);
             Plugin_201_draw_humidity(newString.substring(0, 2));
         }
-
         success = true;
         break;
       }
@@ -325,25 +337,10 @@ boolean Plugin_201(byte function, struct EventStruct *event, String& string)
       {
         String log = "";
         String command = parseString(string, 1);
-        if (command == F("l201temp"))
-        {
-          success = true;
-          String temperature = parseString(string, 2);
-          Plugin_201_draw_temperature(temperature);
-        }
-        if (command == F("l201hmd"))
-        {
-          success = true;
-          String temperature = parseString(string, 2);
-          Plugin_201_draw_humidity(temperature);
-        }
         if (command == F("s201bst"))
         {
-          success = true;
           String button = parseString(string, 2);
           String state = parseString(string, 3);
-          Serial.print  ("button     : "); Serial.println(button.toInt());
-          Serial.print  ("state      : "); Serial.println(state.toInt());
           int intButton = button.toInt();
           switchstate[intButton] = state.toInt();
           if (intButton == 0) {
@@ -361,6 +358,19 @@ boolean Plugin_201(byte function, struct EventStruct *event, String& string)
             UserVar[event->BaseVarIndex + 2] = switchstate[PLUGIN_VALUE_3];
             sendData(event);
           }
+          success = true;
+        }
+        if (command == F("l201temp"))
+        {
+          String temperature = parseString(string, 2);
+          Plugin_201_draw_temperature(temperature);
+          success = true;
+        }
+        if (command == F("l201hmd"))
+        {
+          String temperature = parseString(string, 2);
+          Plugin_201_draw_humidity(temperature);
+          success = true;
         }
         break;
       }
