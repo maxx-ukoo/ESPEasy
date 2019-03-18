@@ -47,29 +47,30 @@ void Plugin_201_touch_calibrate()
 }
 
 void Plugin_201_draw_time(String time) {
+  Plugin_201_TFT->fillRect(130, 1, 69, 20, BACKGROUND);
   Plugin_201_TFT->setTextColor(TFT_WHITE, BACKGROUND);
   Plugin_201_TFT->setFreeFont(FONT_12);
-  Plugin_201_TFT->drawString(time, 130, 1,1);
+  Plugin_201_TFT->drawString(time, 130, 1, 1);
 }
 
 void Plugin_201_draw_temperature(String temperature) {
   Plugin_201_TFT->fillRect(170, 20, 150, 98, BACKGROUND);
   Plugin_201_TFT->setTextColor(TFT_BLUE, BACKGROUND);
   Plugin_201_TFT->setFreeFont(FONT_48);
-  Plugin_201_TFT->drawString(temperature, 170, 20,1);
+  Plugin_201_TFT->drawString(temperature, 170, 20, 1);
   Plugin_201_TFT->setFreeFont(FONT_9);
-  Plugin_201_TFT->drawString("o", 273, 25,1);
+  Plugin_201_TFT->drawString("o", 273, 25, 1);
   Plugin_201_TFT->setFreeFont(FONT_24);
-  Plugin_201_TFT->drawString("C", 284, 25,1);
+  Plugin_201_TFT->drawString("C", 284, 25, 1);
 }
 
 void Plugin_201_draw_humidity(String humidity) {
   Plugin_201_TFT->fillRect(10, 20, 150, 98, BACKGROUND);
   Plugin_201_TFT->setTextColor(TFT_BLUE, BACKGROUND);
   Plugin_201_TFT->setFreeFont(FONT_48);
-  Plugin_201_TFT->drawString(humidity, 10, 20,1);
+  Plugin_201_TFT->drawString(humidity, 10, 20, 1);
   Plugin_201_TFT->setFreeFont(FONT_24);
-  Plugin_201_TFT->drawString("%", 110, 25,1);
+  Plugin_201_TFT->drawString("%", 110, 25, 1);
 }
 
 void Plugin_201_draw_screen()
